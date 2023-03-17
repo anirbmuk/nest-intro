@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product, UpdateProduct } from './product.model';
@@ -16,17 +18,9 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  addProduct(
-    @Body('title') productTitle: string,
-    @Body('description') productDescription: string,
-    @Body('price') productPrice: number,
-  ): Product {
-    const newProduct: Partial<Product> = {
-      title: productTitle,
-      description: productDescription,
-      price: productPrice,
-    };
-    return this.productsService.addProduct(newProduct);
+  @HttpCode(HttpStatus.CREATED)
+  addProduct(@Body() product: Partial<Product>): Product {
+    return this.productsService.addProduct(product);
   }
 
   @Get()
@@ -42,19 +36,13 @@ export class ProductsController {
   @Patch(':id')
   updateProduct(
     @Param('id', ParseIntPipe) productId: string,
-    @Body('title') productTitle?: string,
-    @Body('description') productDescription?: string,
-    @Body('price') productPrice?: number,
+    @Body() product: UpdateProduct
   ): Product {
-    const partialProduct: UpdateProduct = {
-      title: productTitle,
-      description: productDescription,
-      price: productPrice,
-    };
-    return this.productsService.getUpdatedProduct(+productId, partialProduct);
+    return this.productsService.getUpdatedProduct(+productId, product);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteProduct(@Param('id', ParseIntPipe) productId: string): void {
     this.productsService.deleteProduct(+productId);
   }
