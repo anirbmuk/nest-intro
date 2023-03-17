@@ -36,7 +36,7 @@ export class ProductsController {
   @Patch(':id')
   updateProduct(
     @Param('id', ParseIntPipe) productId: string,
-    @Body() product: UpdateProduct
+    @Body() product: UpdateProduct,
   ): Product {
     return this.productsService.getUpdatedProduct(+productId, product);
   }
